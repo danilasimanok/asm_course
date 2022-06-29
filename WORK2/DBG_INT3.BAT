@@ -98,11 +98,14 @@ start:
 	mov ah,3eh	; file closing (bx = file handler)
 	int 21h		;  .
 
-	; set break point to ???
-	mov al,[prog+5]	; al = old command
+	; set break point
+	xor bx,bx	; bx = prog + [cmdnum]
+	mov bx,[cmdnum]	; .
+	add bx,offset prog	; .
+	mov al,[bx]	; al = old command
 	mov oldbyte,al	; save old command
 	mov al,0cch	; al = int 3
-	mov [prog+5],al	; replace old command with "int 3"
+	mov [bx],al	; replace old command with "int 3"
 	; break point set
 	
 	push cs		; save deb_cs and postdbg (ip after debug)
@@ -138,6 +141,7 @@ postdb:
 
 	ret
 
+cmdnum	dw	5
 oldbyte	db	0
 msg	db	"Finished.",13,10,"$"
 fname	db	"hellwrd.com",0
